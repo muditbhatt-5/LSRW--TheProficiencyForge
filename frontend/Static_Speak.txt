@@ -1,0 +1,109 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Mic, MicOff } from 'lucide-react';
+
+const ParagraphListener = () => {
+  const navigate = useNavigate();
+  const [paragraph, setParagraph] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [spokenWords, setSpokenWords] = useState([]);
+
+  useEffect(() => {
+    const savedParagraph = localStorage.getItem('selectedParagraph');
+    if (!savedParagraph) {
+      navigate('/paragraph-reader');
+    } else {
+      setParagraph(savedParagraph);
+    }
+  }, [navigate]);
+
+  const startListening = () => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map((result) => result[0].transcript)
+          .join(' ');
+        
+        const words = transcript.toLowerCase().split(' ');
+        setSpokenWords(words);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } else {
+      alert('Speech recognition is not supported in your browser.');
+    }
+  };
+
+  const compareWords = (word) => {
+    const paragraphWords = paragraph.toLowerCase().split(' ');
+    return spokenWords.includes(word.toLowerCase()) ? 'text-green-500' : 'text-red-500';
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-full max-w-4xl h-[700px] flex rounded-lg overflow-hidden shadow-2xl">
+        <div className="w-1/2 bg-[#159FFC] opacity-20"></div>
+        <div className="w-1/2 bg-white p-8 overflow-y-auto">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center text-[#159FFC] mb-6"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Dashboard
+          </button>
+
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Paragraph Listener</h1>
+
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <p className="text-gray-800 text-sm mb-6">
+              {paragraph.split(' ').map((word, index) => (
+                <span key={index} className={`${compareWords(word)} mx-1`}>
+                  {word}
+                </span>
+              ))}
+            </p>
+
+            <button
+              onClick={startListening}
+              className={`flex items-center px-4 py-2 rounded-md ${
+                isListening
+                  ? 'bg-red-500 hover:bg-red-600'
+                  : 'bg-[#159FFC] hover:bg-[#0b8ee6]'
+              } text-white text-sm`}
+            >
+              {isListening ? (
+                <>
+                  <MicOff className="w-4 h-4 mr-2" />
+                  Stop Listening
+                </>
+              ) : (
+                <>
+                  <Mic className="w-4 h-4 mr-2" />
+                  Start Listening
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ParagraphListener;

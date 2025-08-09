@@ -1,0 +1,75 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Book, Mic, PenTool, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import "./DashboardDesign.css"; // Ensure this file exists
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const features = [
+    {
+      title: "Paragraph Reader",
+      description: "Read and listen to paragraphs to improve pronunciation",
+      icon: Book,
+      path: "/paragraph-reader",
+    },
+    {
+      title: "Paragraph Listener",
+      description: "Practice speaking and get instant feedback",
+      icon: Mic,
+      path: "/paragraph-listener",
+    },
+    {
+      title: "Take Exam",
+      description: "Test your knowledge and track progress",
+      icon: PenTool,
+      path: "/exam",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-full max-w-4xl h-[700px] flex flex-col rounded-lg overflow-hidden shadow-2xl relative">
+        {/* Blurred Background Header */}
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[80%] py-4 px-[100px] bg-[#159FFC] bg-opacity-30 backdrop-blur-lg rounded-lg text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to Dashboard</h1>
+        </div>
+        
+        {/* Main Content */}
+        <div className="w-full bg-white p-8 flex-1 mt-20">
+          <div className="grid gap-6">
+            {features.map((feature) => (
+              <button
+                key={feature.path}
+                onClick={() => navigate(feature.path)}
+                className="flex items-start p-4 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <feature.icon className="w-6 h-6 text-[#159FFC] mt-1" />
+                <div className="ml-4 text-left">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {feature.title}
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {feature.description}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Logout Button at the Bottom */}
+        <div className="w-full flex justify-center p-4 absolute bottom-4">
+          <button onClick={logout} className="custom-button">
+            <LogOut className="w-5 h-5" />
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

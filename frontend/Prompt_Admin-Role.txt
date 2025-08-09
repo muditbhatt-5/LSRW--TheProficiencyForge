@@ -1,0 +1,1 @@
+How i check role in login page if role is admin then redirect on /admin if role is user then redirect /dashboard i have backend in asp.net api and fronted in react, where i need to change code

@@ -1,0 +1,79 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Play, Check } from 'lucide-react';
+
+const paragraphs = [
+  {
+    id: 1,
+    text: "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet at least once.",
+  },
+  {
+    id: 2,
+    text: "Learning a new language requires dedication, practice, and patience. The more you immerse yourself, the faster you'll progress.",
+  },
+  {
+    id: 3,
+    text: "Technology continues to shape our daily lives in unprecedented ways. From artificial intelligence to renewable energy, innovation drives progress.",
+  },
+];
+
+const ParagraphReader = () => {
+  const navigate = useNavigate();
+  const [selectedParagraph, setSelectedParagraph] = useState(null);
+
+  const handleRead = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleSelect = (text) => {
+    setSelectedParagraph(text);
+    localStorage.setItem('selectedParagraph', text);
+    navigate('/paragraph-listener');
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-full max-w-4xl h-[700px] flex rounded-lg overflow-hidden shadow-2xl">
+        <div className="w-1/2 bg-[#159FFC] opacity-20"></div>
+        <div className="w-1/2 bg-white p-8 overflow-y-auto">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center text-[#159FFC] mb-6"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Dashboard
+          </button>
+
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Paragraph Reader</h1>
+
+          <div className="space-y-4">
+            {paragraphs.map((paragraph) => (
+              <div key={paragraph.id} className="bg-white p-4 rounded-lg shadow-lg">
+                <p className="text-gray-800 text-sm mb-4">{paragraph.text}</p>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleRead(paragraph.text)}
+                    className="flex items-center px-3 py-2 bg-[#159FFC] text-white rounded-md hover:bg-[#0b8ee6] text-sm"
+                  >
+                    <Play className="w-4 h-4 mr-1" />
+                    Read
+                  </button>
+                  <button
+                    onClick={() => handleSelect(paragraph.text)}
+                    className="flex items-center px-3 py-2 border border-[#159FFC] text-[#159FFC] rounded-md hover:bg-[#159FFC] hover:text-white text-sm"
+                  >
+                    <Check className="w-4 h-4 mr-1" />
+                    Select
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ParagraphReader;
